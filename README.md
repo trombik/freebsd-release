@@ -3,6 +3,12 @@ freebsd-release
 
 release(7) the latest FreeBSD release and stable
 
+REQUIREMENT
+===========
+
+- git
+- subversion
+
 USAGE
 =====
 
@@ -19,6 +25,11 @@ make all
 ========
 
 - do release(7)
+
+make update, update-stable, update-head
+=======================================
+
+- svn checkout src
 
 SEE ALSO
 ========
