@@ -19,3 +19,8 @@ make all
 ========
 
 - do release(7)
+
+SEE ALSO
+========
+
+https://github.com/trombik/freebsd-release
