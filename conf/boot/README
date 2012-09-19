@@ -1,0 +1,17 @@
+loader.conf* files are managed by freebsd-release Makefile, found at
+
+https://github.com/trombik/freebsd-release
+
+local modification to loader.conf* on pxeboot server is over-written by "make
+upload". modify loader.conf* in the repository if permanent change is required..
+
+hardware-specific hints are _required_ to enable serial console during
+installation:
+
+# cd /path/to/FTP/dir
+# cd boot
+# ln -s loader.conf.$ADDITIONAL_FILE loader.conf.local
+
+if the file system doesn't support symlink (msdosfs)
+
+# cp loader.conf.$ADDITIONAL_FILE loader.conf.local

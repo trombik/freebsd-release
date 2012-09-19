@@ -1,0 +1,5 @@
+# disable the first uart(4) port (real serial port)
+hint.uart.0.flags="0x00"
+# enable the second one (virtual serial port)
+# loader prompt and kernel message go to both consoles (com and vid)
+hint.uart.1.flags="0x30"
