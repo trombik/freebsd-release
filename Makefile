@@ -181,7 +181,7 @@ pull-ports:
 		(cd ${RELEASE_DIR}/portstrees/freebsd-ports && \
 			${GIT} pull ${GIT_FLAGS}); \
 	else \
-		@echo "please make clone-ports first" 1>&2 && exit 1; \
+		echo "please make clone-ports first" 1>&2 && exit 1; \
 	fi
 
 # two targets to get HEAD sources.
@@ -198,15 +198,15 @@ update-head:
 upload:
 .for V in ${RELEASE_MINOR_VERSIONS}
 	# XXX [KNOWN BUG] gzipped mfsroot doesn't work
-	if [ -f ${RELEASE_DIR}/chroot/releng/${RELEASE_MAJOR}.${RELEASE_MINOR_VERSIONS}/R/cdrom/disc1/boot/mfsroot.gz ]; then \
-		gunzip ${RELEASE_DIR}/chroot/releng/${RELEASE_MAJOR}.${RELEASE_MINOR_VERSIONS}/R/cdrom/disc1/boot/mfsroot.gz ; \
+	if [ -f ${RELEASE_DIR}/chroot/releng/${RELEASE_MAJOR}.${V}/R/cdrom/disc1/boot/mfsroot.gz ]; then \
+		gunzip ${RELEASE_DIR}/chroot/releng/${RELEASE_MAJOR}.${V}/R/cdrom/disc1/boot/mfsroot.gz ; \
 	fi
 	ssh ${PXE_HOST} \
-		rm -rf /tftproot/pub/FreeBSD/${ARCH}/${RELEASE_MAJOR}.${RELEASE_MINOR_VERSIONS}-RELEASE
+		rm -rf /tftproot/pub/FreeBSD/${ARCH}/${RELEASE_MAJOR}.${V}-RELEASE
 	scp -r \
-		${RELEASE_DIR}/chroot/releng/${RELEASE_MAJOR}.${RELEASE_MINOR_VERSIONS}/R/cdrom/disc1 \
-		${PXE_HOST}:/tftproot/pub/FreeBSD/${ARCH}/${RELEASE_MAJOR}.${RELEASE_MINOR_VERSIONS}-RELEASE
+		${RELEASE_DIR}/chroot/releng/${RELEASE_MAJOR}.${V}/R/cdrom/disc1 \
+		${PXE_HOST}:/tftproot/pub/FreeBSD/${ARCH}/${RELEASE_MAJOR}.${V}-RELEASE
 	# copy loader.conf and beastie.4th (with "PXEBOOT" in the menu) for pxeboot
 	scp ${RELEASE_DIR}/conf/boot/* \
-		${PXE_HOST}:/tftproot/pub/FreeBSD/${ARCH}/${RELEASE_MAJOR}.${RELEASE_MINOR_VERSIONS}-RELEASE/boot/
+		${PXE_HOST}:/tftproot/pub/FreeBSD/${ARCH}/${RELEASE_MAJOR}.${V}-RELEASE/boot/
 .endfor
