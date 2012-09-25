@@ -69,10 +69,12 @@ SVN!=			which svn
 .endif
 .if !defined(SVN)
 	@echo "svn not found in PATH." 1>&2
-	@echo "please install devel/svn" 1>&2 && exit 1
+	@echo "please install devel/subversion" 1>&2 && exit 1
 .endif
 
+# gitorious.org/freebsd has been inactive, probably a dead project
 PORTS_GIT_URL=		git://gitorious.org/freebsd/freebsd-ports.git
+PORTS_SVN_URL=		svn://svn.freebsd.org/ports/head
 
 # release the latest RELEASE branches.
 # to release -STABLE, "make update-stable release-stable"
@@ -174,12 +176,12 @@ update-stable:
 
 clone-ports:
 	(cd ${RELEASE_DIR}/portstrees && \
-		${GIT} clone ${GIT_FLAGS} ${PORTS_GIT_URL})
+		${SVN} checkout ${SVN_FLAGS} ${PORTS_SVN_URL} freebsd-ports)
 
 pull-ports:
 	if [ -d ${RELEASE_DIR}/portstrees/freebsd-ports ]; then \
 		(cd ${RELEASE_DIR}/portstrees/freebsd-ports && \
-			${GIT} pull ${GIT_FLAGS}); \
+			${SVN} up ${SVN_FLAGS}); \
 	else \
 		echo "please make clone-ports first" 1>&2 && exit 1; \
 	fi
