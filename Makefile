@@ -37,14 +37,15 @@
 # SEE ALSO
 #   http://www.freebsd.org/doc/en/articles/releng/index.html (outdated but still useful)
 #   release(7)
-#   /usr/src/release/Makefile 
+#   /usr/src/release/Makefile
+#   /usr/src/release/generate-release.sh
 
 RELEASE_DIR?=		/usr/home/release
 CHROOT_DIR?=		${RELEASE_DIR}/chroot
-RELEASE_MAJOR?=		8
-RELEASE_MINOR_VERSIONS?=	2
+RELEASE_MAJOR?=		9
+RELEASE_MINOR_VERSIONS?=	1
 SVNROOT?=		svn://svn.freebsd.org/base
-EXTPORTSDIR?=		/usr/ports
+PORTSDIR?=		/usr/ports
 SYSCTL=			/sbin/sysctl
 ARCH!=			uname -m
 NCPU!=			${SYSCTL} -n kern.smp.cpus
@@ -84,13 +85,9 @@ all:	update release
 
 # let's make release faster
 #
-# * copy local ports (EXTPORTSDIR, TODO use git repo)
-# * do not fetch distfiles every build (RELEASEDISTFILES)
-# * create ISO (MAKE_ISOS)
-# * use svn (SVNROOT, SVNBRANCH)
-# * use multiple cores (WORLD_FLAGS, KERNEL_FLAGS)
+# * use local ports (PORTSDIR, TODO use git repo)
+# * use multiple cores (-j)
 # * do not build doc (NODOC)
-# * use FTP passive (FTP_PASSIVE_MODE)
 release:
 .for V in ${RELEASE_MINOR_VERSIONS}
 	${INSTALL} -d ${CHROOT_DIR}/releng/${RELEASE_MAJOR}.${V}
@@ -101,19 +98,10 @@ release:
 		clean
 	make -C ${RELEASE_DIR}/sources/releng/${RELEASE_MAJOR}.${V}/src/release \
 		release \
-		CHROOTDIR=${CHROOT_DIR}/releng/${RELEASE_MAJOR}.${V} \
-		RELEASETAG=RELENG_${RELEASE_MAJOR}_${V} \
-		BUILDNAME=${RELEASE_MAJOR}.${V}-RELEASE \
-		LOCAL_PATCHES="${LOCAL_PATCHES}" \
-		PATCH_FLAGS="${PATCH_FLAGS}" \
-		EXTPORTSDIR=${EXTPORTSDIR} \
-		RELEASEDISTFILES=${EXTPORTSDIR}/distfiles \
-		SVNROOT=${SVNROOT} \
-		SVNBRANCH=releng/${RELEASE_MAJOR}.${V} \
-		WORLD_FLAGS="-j${MAKE_JOBS_NUMBER}" \
-		KERNEL_FLAGS="-j${MAKE_JOBS_NUMBER}" \
-		MAKE_ISOS=1 NODOC=1 FTP_PASSIVE_MODE=1
+		PORTSDIR=${PORTSDIR} \
+		NODOC=y
 .endfor
+
 release-stable:
 	${INSTALL} -d ${CHROOT_DIR}/stable/${RELEASE_MAJOR}
 	make -C ${RELEASE_DIR}/sources/stable/${RELEASE_MAJOR}/src \
@@ -124,18 +112,8 @@ release-stable:
 	make -C ${RELEASE_DIR}/sources/stable/${RELEASE_MAJOR}/src/release \
 		-j ${MAKE_JOBS_NUMBER} \
 		release \
-		CHROOTDIR=${CHROOT_DIR}/stable/${RELEASE_MAJOR} \
-		RELEASETAG=RELENG_${RELEASE_MAJOR} \
-		BUILDNAME=${RELEASE_MAJOR}-STABLE \
-		LOCAL_PATCHES="${LOCAL_PATCHES}" \
-		PATCH_FLAGS="${PATCH_FLAGS}" \
-		EXTPORTSDIR=${EXTPORTSDIR} \
-		RELEASEDISTFILES=${EXTPORTSDIR}/distfiles \
-		SVNROOT=${SVNROOT} \
-		SVNBRANCH=stable/${RELEASE_MAJOR} \
-		WORLD_FLAGS="-j${MAKE_JOBS_NUMBER}" \
-		KERNEL_FLAGS="-j${MAKE_JOBS_NUMBER}" \
-		MAKE_ISOS=1 NODOC=1 FTP_PASSIVE_MODE=1
+		PORTSDIR=${PORTSDIR} \
+		NODOC=y
 
 init:	create-dirs checkout checkout-stable checkout-head
 
