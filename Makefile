@@ -39,6 +39,10 @@
 #   release(7)
 #   /usr/src/release/Makefile
 #   /usr/src/release/generate-release.sh
+#
+# TODO
+# - support cross-build
+# - support branched portstree
 
 RELEASE_DIR?=		/usr/home/release
 CHROOT_DIR?=		${RELEASE_DIR}/chroot
