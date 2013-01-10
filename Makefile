@@ -98,6 +98,8 @@ release:
 		-j${MAKE_JOBS_NUMBER} \
 		buildworld buildkernel
 	make -C ${RELEASE_DIR}/sources/releng/${RELEASE_MAJOR}.${V}/src/release \
+		clean
+	make -C ${RELEASE_DIR}/sources/releng/${RELEASE_MAJOR}.${V}/src/release \
 		release \
 		CHROOTDIR=${CHROOT_DIR}/releng/${RELEASE_MAJOR}.${V} \
 		RELEASETAG=RELENG_${RELEASE_MAJOR}_${V} \
