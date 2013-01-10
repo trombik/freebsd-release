@@ -85,7 +85,7 @@ all:	update release
 
 # let's make release faster
 #
-# * use local ports (PORTSDIR, TODO use git repo)
+# * use local ports (PORTSDIR)
 # * use multiple cores (-j)
 # * do not build doc (NODOC)
 release:
