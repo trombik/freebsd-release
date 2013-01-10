@@ -118,7 +118,9 @@ release-stable:
 	${INSTALL} -d ${CHROOT_DIR}/stable/${RELEASE_MAJOR}
 	make -C ${RELEASE_DIR}/sources/stable/${RELEASE_MAJOR}/src \
 		-j${MAKE_JOBS_NUMBER} \
-		buildworld
+		buildworld buildkernel
+	make -C ${RELEASE_DIR}/sources/releng/${RELEASE_MAJOR}.${V}/src/release \
+		clean
 	make -C ${RELEASE_DIR}/sources/stable/${RELEASE_MAJOR}/src/release \
 		-j ${MAKE_JOBS_NUMBER} \
 		release \
