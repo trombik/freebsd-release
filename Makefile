@@ -72,9 +72,11 @@ SVN!=			which svn
 	@echo "please install devel/subversion" 1>&2 && exit 1
 .endif
 
-# gitorious.org/freebsd has been inactive, probably a dead project
-PORTS_GIT_URL=		git://gitorious.org/freebsd/freebsd-ports.git
-PORTS_SVN_URL=		svn://svn.freebsd.org/ports/head
+# git is used as it's much easier to fork repos. i.e. creating your own
+# portstree. also, use git:// which is faster than https://
+# XXX for now, the official github repository is used. but we should fork it to
+# github.com/reallyenglish.
+PORTS_GIT_URL=		git://github.com/freebsd/freebsd-ports.git
 
 # release the latest RELEASE branches.
 # to release -STABLE, "make update-stable release-stable"
@@ -82,7 +84,7 @@ all:	update release
 
 # let's make release faster
 #
-# * copy local ports (EXTPORTSDIR)
+# * copy local ports (EXTPORTSDIR, TODO use git repo)
 # * do not fetch distfiles every build (RELEASEDISTFILES)
 # * create ISO (MAKE_ISOS)
 # * use svn (SVNROOT, SVNBRANCH)
@@ -94,7 +96,7 @@ release:
 	${INSTALL} -d ${CHROOT_DIR}/releng/${RELEASE_MAJOR}.${V}
 	make -C ${RELEASE_DIR}/sources/releng/${RELEASE_MAJOR}.${V}/src \
 		-j${MAKE_JOBS_NUMBER} \
-		buildworld
+		buildworld buildkernel
 	make -C ${RELEASE_DIR}/sources/releng/${RELEASE_MAJOR}.${V}/src/release \
 		release \
 		CHROOTDIR=${CHROOT_DIR}/releng/${RELEASE_MAJOR}.${V} \
@@ -176,12 +178,12 @@ update-stable:
 
 clone-ports:
 	(cd ${RELEASE_DIR}/portstrees && \
-		${SVN} checkout ${SVN_FLAGS} ${PORTS_SVN_URL} freebsd-ports)
+		${GIT} clone ${GIT_FLAGS} ${PORTS_GIT_URL} freebsd-ports)
 
 pull-ports:
 	if [ -d ${RELEASE_DIR}/portstrees/freebsd-ports ]; then \
 		(cd ${RELEASE_DIR}/portstrees/freebsd-ports && \
-			${SVN} up ${SVN_FLAGS}); \
+			${GIT} pull ${GIT_FLAGS}); \
 	else \
 		echo "please make clone-ports first" 1>&2 && exit 1; \
 	fi
