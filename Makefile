@@ -76,7 +76,7 @@ SVN!=			which svn
 # portstree. also, use git:// which is faster than https://
 # XXX for now, the official github repository is used. but we should fork it to
 # github.com/reallyenglish.
-PORTS_GIT_URL=		git://github.com/freebsd/freebsd-ports.git
+PORTS_GIT_URL?=		git://github.com/freebsd/freebsd-ports.git
 
 # release the latest RELEASE branches.
 # to release -STABLE, "make update-stable release-stable"
