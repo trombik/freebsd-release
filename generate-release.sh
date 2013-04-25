@@ -40,12 +40,14 @@ BRANCHSRC=$1
 : ${BRANCHPORTS:=head}
 : ${WORLD_FLAGS:=${MAKE_FLAGS}}
 : ${KERNEL_FLAGS:=${MAKE_FLAGS}}
-: ${CHROOTDIR:=$2}
- 
-if [ ! -r "${CHROOTDIR}" ]; then
-	echo "${CHROOTDIR}: scratch dir not found."
-	exit 1
+: ${GIT_CMD:=/usr/local/bin/git}
+: ${GIT_URL:=https://github.com/reallyenglish/freebsd-ports}
+: ${GIT_BRANCH:=reallyenglish}
+
+if [ ! -d "$2" ]; then
+    mkdir -p $2 || exit 1
 fi
+CHROOTDIR=`realpath $2`
 
 CHROOT_CMD="/usr/sbin/chroot ${CHROOTDIR}"
 case ${TARGET} in
@@ -72,8 +74,11 @@ set -e # Everything must succeed
 
 mkdir -p ${CHROOTDIR}/usr/src
 ${SVN_CMD} co ${SVNROOT}/${BRANCHSRC} ${CHROOTDIR}/usr/src
-${SVN_CMD} co ${SVNROOTDOC}/${BRANCHDOC} ${CHROOTDIR}/usr/doc
-${SVN_CMD} co ${SVNROOTPORTS}/${BRANCHPORTS} ${CHROOTDIR}/usr/ports
+#${SVN_CMD} co ${SVNROOTDOC}/${BRANCHDOC} ${CHROOTDIR}/usr/doc
+if [ ! -d ${CHROOTDIR}/usr/ports ]; then
+    ${GIT_CMD} clone --branch ${GIT_BRANCH} ${GIT_URL} ${CHROOTDIR}/usr/ports
+fi
+(cd ${CHROOTDIR}/usr/ports && ${GIT_CMD} pull)
 
 ${SETENV} ${NWMAKE} -C ${CHROOTDIR}/usr/src ${WORLD_FLAGS} buildworld
 ${SETENV} ${NWMAKE} -C ${CHROOTDIR}/usr/src installworld distribution DESTDIR=${CHROOTDIR}
