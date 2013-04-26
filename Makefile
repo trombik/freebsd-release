@@ -86,6 +86,14 @@ ${PUBLIC_WWWDIR}:
 	mtree -Ud -f  ${PUBLIC_WWWDIR}.mtree -p ${PUBLIC_WWWDIR} \
 	)
 
+# ISO images: powerpc/powerpc64/ISO-IMAGES/9.1/
+# distfiles:  powerpc/powerpc64/9.1-RELEASE
+publish:
+	(cd ${.CURDIR} && cp -a ${RELEASE_DIR}/${RELEASE_MAJOR}.${RELEASE_MINOR}/${TARGET}/R/ftp/* ${PUBLIC_WWWDIR}/pub/FreeBSD/releases/${TARGET}/${TARGET_ARCH}/${RELEASE_MAJOR}.${RELEASE_MINOR}-RELEASE/)
+.for F in bootonly.iso memstick release.iso
+	(cd ${.CURDIR} && cp -a ${RELEASE_DIR}/${RELEASE_MAJOR}.${RELEASE_MINOR}/${TARGET}/R/${F} ${PUBLIC_WWWDIR}/pub/FreeBSD/releases/${TARGET}/${TARGET_ARCH}/ISO-IMAGES/FreeBSD-${RELEASE_MAJOR}.${RELEASE_MINOR}-RELEASE-${TARGET_ARCH}-${F})
+.endfor
+
 upload:
 .for V in ${RELEASE_MINOR_VERSIONS}
 	# XXX [KNOWN BUG] gzipped mfsroot doesn't work
