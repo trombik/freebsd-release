@@ -58,7 +58,7 @@ case ${TARGET_ARCH} in
 "")	;;
 *)	SETENV_TARGET_ARCH="TARGET_ARCH=$TARGET_ARCH" ;;
 esac
-SETENV="env -i PATH=/bin:/usr/bin:/sbin:/usr/sbini MAKEOBJDIRPREFIX=${MAKEOBJDIRPREFIX}"
+SETENV="env -i PATH=/bin:/usr/bin:/sbin:/usr/sbin"
 CROSSENV="${SETENV_TARGET} ${SETENV_TARGET_ARCH}"
 WMAKE="make -C /usr/src ${WORLD_FLAGS}"
 NWMAKE="${WMAKE} __MAKE_CONF=/dev/null SRCCONF=/dev/null"
@@ -80,8 +80,8 @@ if [ ! -d ${CHROOTDIR}/usr/ports ]; then
 fi
 (cd ${CHROOTDIR}/usr/ports && ${GIT_CMD} pull)
 
-${SETENV} ${NWMAKE} -C ${CHROOTDIR}/usr/src ${WORLD_FLAGS} buildworld
-${SETENV} ${NWMAKE} -C ${CHROOTDIR}/usr/src installworld distribution DESTDIR=${CHROOTDIR}
+${SETENV} MAKEOBJDIRPREFIX=${MAKEOBJDIRPREFIX} ${NWMAKE} -C ${CHROOTDIR}/usr/src ${WORLD_FLAGS} buildworld
+${SETENV} MAKEOBJDIRPREFIX=${MAKEOBJDIRPREFIX} ${NWMAKE} -C ${CHROOTDIR}/usr/src installworld distribution DESTDIR=${CHROOTDIR}
 mount -t devfs devfs ${CHROOTDIR}/dev
 trap "umount ${CHROOTDIR}/dev" EXIT # Clean up devfs mount on exit
 
