@@ -1,7 +1,7 @@
 freebsd-release
 ===============
 
-release(7) the latest FreeBSD release and stable
+release(7) the latest FreeBSD release
 
 REQUIREMENT
 ===========
@@ -12,24 +12,35 @@ REQUIREMENT
 USAGE
 =====
 
-    # make init
+release the latest release for same TARGET and TARGET_ARCH on build host.
+
     # make
+
+publish the result to PUBLIC_WWWDIR
+
+    # make publish
+
+cross build i386 on amd64
+
+    # make TARGET=i386 TARGET_ARCH=i386
+
+currently, supported architectures include amd64 and i386 (update mtree file to
+support more architectures).
 
 make init
 =========
 
-- creates directory structure
-- svn checkout RELENG, STABLE and HEAD
+NOOP
 
 make all
 ========
 
 - do release(7)
 
-make update, update-stable, update-head
-=======================================
+make publish
+============
 
-- svn checkout src
+- copy created distfiles and ISO images to PUBLIC_WWWDIR
 
 SEE ALSO
 ========

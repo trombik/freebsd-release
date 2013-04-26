@@ -41,7 +41,6 @@
 #   /usr/src/release/generate-release.sh
 #
 # TODO
-# - create public HTTP directory structure
 # - test "upload" target
 # - KERNCONF="GENERIC XENHVM"
 # - LOCAL_PATCHES support
