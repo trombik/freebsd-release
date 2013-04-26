@@ -1,0 +1,29 @@
+/set type=dir uname=root gname=wheel mode=0755
+.              
+    pub            
+        FreeBSD        
+            releases       
+                amd64          
+                    amd64          
+                        9.1-RELEASE    
+                        ..
+                        ISO-IMAGES     
+                            9.1            
+                            ..
+                        ..
+                    ..
+                ..
+                i386           
+                    i386           
+                        9.1-RELEASE    
+                        ..
+                        ISO-IMAGES     
+                            9.1            
+                            ..
+                        ..
+                    ..
+                ..
+            ..
+        ..
+    ..
+..
