@@ -58,7 +58,7 @@ case ${TARGET_ARCH} in
 "")	;;
 *)	SETENV_TARGET_ARCH="TARGET_ARCH=$TARGET_ARCH" ;;
 esac
-SETENV="env -i PATH=/bin:/usr/bin:/sbin:/usr/sbin"
+SETENV="env -i PATH=/bin:/usr/bin:/sbin:/usr/sbini MAKEOBJDIRPREFIX=${MAKEOBJDIRPREFIX}"
 CROSSENV="${SETENV_TARGET} ${SETENV_TARGET_ARCH}"
 WMAKE="make -C /usr/src ${WORLD_FLAGS}"
 NWMAKE="${WMAKE} __MAKE_CONF=/dev/null SRCCONF=/dev/null"
