@@ -87,11 +87,14 @@ ${PUBLIC_WWWDIR}:
 
 # ISO images: powerpc/powerpc64/ISO-IMAGES/9.1/
 # distfiles:  powerpc/powerpc64/9.1-RELEASE
-publish:
+publish:	makepatch
 	(cd ${.CURDIR} && cp -a ${RELEASE_DIR}/${RELEASE_MAJOR}.${RELEASE_MINOR}/${TARGET}/R/ftp/* ${PUBLIC_WWWDIR}/pub/FreeBSD/releases/${TARGET}/${TARGET_ARCH}/${RELEASE_MAJOR}.${RELEASE_MINOR}-RELEASE/)
 .for F in bootonly.iso memstick release.iso
 	(cd ${.CURDIR} && cp -a ${RELEASE_DIR}/${RELEASE_MAJOR}.${RELEASE_MINOR}/${TARGET}/R/${F} ${PUBLIC_WWWDIR}/pub/FreeBSD/releases/${TARGET}/${TARGET_ARCH}/ISO-IMAGES/FreeBSD-${RELEASE_MAJOR}.${RELEASE_MINOR}-RELEASE-${TARGET_ARCH}-${F})
 .endfor
+
+makepatch:
+	(cd ${.CURDIR} && cd ${RELEASE_DIR}/${RELEASE_MAJOR}.${RELEASE_MINOR}/${TARGET}/usr/src && svn diff) | (cd ${.CURDIR} && cat - > ${PUBLIC_WWWDIR}/pub/FreeBSD/releases/${TARGET}/${TARGET_ARCH}/${RELEASE_MAJOR}.${RELEASE_MINOR}-RELEASE/patch-src.txt)
 
 upload:
 .for V in ${RELEASE_MINOR_VERSIONS}
