@@ -1,4 +1,5 @@
 /release/
 /obj/
 /*.log
+/www/
 *.swp
