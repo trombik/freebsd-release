@@ -1,7 +1,7 @@
 freebsd-release
 ===============
 
-release(7) the latest FreeBSD release
+release(7) the latest FreeBSD release. supports 9.x and newer.
 
 REQUIREMENT
 ===========
