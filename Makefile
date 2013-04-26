@@ -61,8 +61,9 @@ MAKE_JOBS_NUMBER!=	echo ${NCPU} \* 2 | bc
 LOCAL_PATCHES?=
 PXE_HOST?=		pxe.dcjp02.reallyenglish.com
 OBJDIR?=	obj
+PUBLIC_WWWDIR?=	www
 
-all:	generate_release
+all:	generate_release ${PUBLIC_WWWDIR}
 
 init:
 
@@ -75,6 +76,15 @@ generate_release:
 		TARGET_ARCH=${TARGET_ARCH} \
 		MAKEOBJDIRPREFIX=`realpath ${OBJDIR}` \
 		sh ${.CURDIR}/generate-release.sh releng/${RELEASE_MAJOR}.${RELEASE_MINOR} `realpath ${RELEASE_DIR}/${RELEASE_MAJOR}.${RELEASE_MINOR}/${TARGET}`)
+
+makemtree:
+	@(cd ${.CURDIR} && mtree -cind -k uname,gname,mode,nochange,link -p ${PUBLIC_WWWDIR} > ${PUBLIC_WWWDIR}.mtree)
+
+${PUBLIC_WWWDIR}:
+	(cd ${.CURDIR} && \
+	install -o root -g wheel -m 0755 -d ${PUBLIC_WWWDIR} && \
+	mtree -Ud -f  ${PUBLIC_WWWDIR}.mtree -p ${PUBLIC_WWWDIR} \
+	)
 
 upload:
 .for V in ${RELEASE_MINOR_VERSIONS}
