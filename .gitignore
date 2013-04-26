@@ -1,5 +1,4 @@
-/chroot/
-/portstrees/
-/sources/
+/release/
+/obj/
 /*.log
 *.swp
