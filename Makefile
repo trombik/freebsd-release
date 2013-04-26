@@ -41,149 +41,40 @@
 #   /usr/src/release/generate-release.sh
 #
 # TODO
-# - support cross-build
-# - support branched portstree
+# - create public HTTP directory structure
+# - test "upload" target
+# - KERNCONF="GENERIC XENHVM"
+# - LOCAL_PATCHES support
 
-RELEASE_DIR?=		/usr/home/release
-CHROOT_DIR?=		${RELEASE_DIR}/chroot
+RELEASE_DIR?=		release
 RELEASE_MAJOR?=		9
-RELEASE_MINOR_VERSIONS?=	1
-SVNROOT?=		svn://svn.freebsd.org/base
-PORTSDIR?=		/usr/ports
+RELEASE_MINOR?=	1
 SYSCTL=			/sbin/sysctl
-ARCH!=			uname -m
+.if !defined(TARGET)
+TARGET!=		uname -m
+.endif
+.if !defined(TARGET_ARCH)
+TARGET_ARCH!=	uname -p
+.endif
 NCPU!=			${SYSCTL} -n hw.ncpu
 MAKE_JOBS_NUMBER!=	echo ${NCPU} \* 2 | bc
 LOCAL_PATCHES?=
-PATCH_FLAGS?=
 PXE_HOST?=		pxe.dcjp02.reallyenglish.com
+OBJDIR?=	obj
 
-.if defined(DEBUG)
-SVN_FLAGS=
-GIT_FLAGS=
-.else
-SVN_FLAGS=	--quiet
-GIT_FLAGS=	--quiet
-.endif
+all:	generate_release
 
-GIT!=			which git
-SVN!=			which svn
-.if !defined(GIT)
-	@echo "git not found in PATH." 1>&2
-	@echo "please install devel/git" 1>&2 && exit 1
-.endif
-.if !defined(SVN)
-	@echo "svn not found in PATH." 1>&2
-	@echo "please install devel/subversion" 1>&2 && exit 1
-.endif
+init:
 
-# git is used as it's much easier to fork repos. i.e. creating your own
-# portstree. also, use git:// which is faster than https://
-# XXX for now, the official github repository is used. but we should fork it to
-# github.com/reallyenglish.
-PORTS_GIT_URL?=		git://github.com/freebsd/freebsd-ports.git
-
-# release the latest RELEASE branches.
-# to release -STABLE, "make update-stable release-stable"
-all:	update release
-
-# let's make release faster
-#
-# * use local ports (PORTSDIR)
-# * use multiple cores (-j)
-# * do not build doc (NODOC)
-release:
-.for V in ${RELEASE_MINOR_VERSIONS}
-	${INSTALL} -d ${CHROOT_DIR}/releng/${RELEASE_MAJOR}.${V}
-	make -C ${RELEASE_DIR}/sources/releng/${RELEASE_MAJOR}.${V}/src \
-		-j${MAKE_JOBS_NUMBER} \
-		buildworld buildkernel
-	make -C ${RELEASE_DIR}/sources/releng/${RELEASE_MAJOR}.${V}/src/release \
-		clean
-	make -C ${RELEASE_DIR}/sources/releng/${RELEASE_MAJOR}.${V}/src/release \
-		release \
-		PORTSDIR=${PORTSDIR} \
-		NODOC=y
-.endfor
-
-release-stable:
-	${INSTALL} -d ${CHROOT_DIR}/stable/${RELEASE_MAJOR}
-	make -C ${RELEASE_DIR}/sources/stable/${RELEASE_MAJOR}/src \
-		-j${MAKE_JOBS_NUMBER} \
-		buildworld buildkernel
-	make -C ${RELEASE_DIR}/sources/releng/${RELEASE_MAJOR}.${V}/src/release \
-		clean
-	make -C ${RELEASE_DIR}/sources/stable/${RELEASE_MAJOR}/src/release \
-		-j ${MAKE_JOBS_NUMBER} \
-		release \
-		PORTSDIR=${PORTSDIR} \
-		NODOC=y
-
-init:	create-dirs checkout checkout-stable checkout-head
-
-create-dirs:
-	${INSTALL} -d ${RELEASE_DIR}/sources
-	${INSTALL} -d ${RELEASE_DIR}/sources/releng
-	${INSTALL} -d ${RELEASE_DIR}/sources/stable
-	${INSTALL} -d ${RELEASE_DIR}/portstrees
-	${INSTALL} -d ${RELEASE_DIR}/chroot
-	${INSTALL} -d ${RELEASE_DIR}/conf
-	${INSTALL} -d ${RELEASE_DIR}/conf/boot
-
-checkout:
-.for V in ${RELEASE_MINOR_VERSIONS}
-	${INSTALL} -d ${RELEASE_DIR}/sources/releng/${RELEASE_MAJOR}.${V}
-	(cd ${RELEASE_DIR}/sources/releng/${RELEASE_MAJOR}.${V} && \
-		${SVN} checkout ${SVN_FLAGS} \
-		${SVNROOT}/releng/${RELEASE_MAJOR}.${V} src)
-.endfor
-
-checkout-stable:
-	${INSTALL} -d ${RELEASE_DIR}/sources/stable/${RELEASE_MAJOR}
-	(cd ${RELEASE_DIR}/sources/stable/${RELEASE_MAJOR} && \
-		${SVN} checkout ${SVN_FLAGS} \
-		${SVNROOT}/stable/${RELEASE_MAJOR} src)
-
-update:
-.for V in ${RELEASE_MINOR_VERSIONS}
-	if [ -d ${RELEASE_DIR}/sources/releng/${RELEASE_MAJOR}.${V}/src ]; then \
-		(cd ${RELEASE_DIR}/sources/releng/${RELEASE_MAJOR}.${V}/src && \
-			${SVN} ${SVN_FLAGS} update); \
-	else \
-		echo "please make checkout first" 1>&2 && exit 1; \
-	fi
-.endfor
-
-update-stable:
-	if [ -d ${RELEASE_DIR}/sources/stable/${RELEASE_MAJOR}/src ]; then \
-		(cd ${RELEASE_DIR}/sources/stable/${RELEASE_MAJOR}/src && \
-			${SVN} ${SVN_FLAGS} update); \
-	else \
-		echo "please make checkout-stable first" 1>&2 && exit 1; \
-	fi
-
-clone-ports:
-	(cd ${RELEASE_DIR}/portstrees && \
-		${GIT} clone ${GIT_FLAGS} ${PORTS_GIT_URL} freebsd-ports)
-
-pull-ports:
-	if [ -d ${RELEASE_DIR}/portstrees/freebsd-ports ]; then \
-		(cd ${RELEASE_DIR}/portstrees/freebsd-ports && \
-			${GIT} pull ${GIT_FLAGS}); \
-	else \
-		echo "please make clone-ports first" 1>&2 && exit 1; \
-	fi
-
-# two targets to get HEAD sources.
-# no release-head target because we don't need it.
-# also, building HEAD on non-HEAD is not supported.
-# use snapshot or build HEAD on your own host.
-checkout-head:
-	(cd ${RELEASE_DIR}/sources && \
-		${SVN} checkout ${SVN_FLAGS} ${SVNROOT}/head head)
-
-update-head:
-	(cd ${RELEASE_DIR}/sources/head && ${SVN} ${SVN_FLAGS} update)
+generate_release:
+	(cd ${.CURDIR} && mkdir -p ${RELEASE_DIR}/${RELEASE_MAJOR}.${RELEASE_MINOR}/${TARGET})
+	(cd ${.CURDIR} && mkdir -p ${OBJDIR}/`realpath ${RELEASE_DIR}/${RELEASE_MAJOR}.${RELEASE_MINOR}/${TARGET}`/usr/src)
+	(cd ${.CURDIR} && /usr/bin/env \
+		MAKE_FLAGS="-j${MAKE_JOBS_NUMBER}" \
+		TARGET=${TARGET} \
+		TARGET_ARCH=${TARGET_ARCH} \
+		MAKEOBJDIRPREFIX=`realpath ${OBJDIR}` \
+		sh ${.CURDIR}/generate-release.sh releng/${RELEASE_MAJOR}.${RELEASE_MINOR} `realpath ${RELEASE_DIR}/${RELEASE_MAJOR}.${RELEASE_MINOR}/${TARGET}`)
 
 upload:
 .for V in ${RELEASE_MINOR_VERSIONS}
