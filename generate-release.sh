@@ -101,5 +101,5 @@ fi
 
 ${CHROOT_CMD} ${SETENV} ${CROSSENV} ${WMAKE} buildworld
 ${CHROOT_CMD} ${SETENV} ${CROSSENV} ${KMAKE} buildkernel
-${CHROOT_CMD} ${SETENV} ${CROSSENV} ${RMAKE} release
+${CHROOT_CMD} ${SETENV} ${CROSSENV} ${RMAKE} clean release
 ${CHROOT_CMD} ${SETENV} ${CROSSENV} ${RMAKE} install DESTDIR=/R
