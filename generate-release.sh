@@ -99,7 +99,12 @@ if [ -d ${CHROOTDIR}/usr/doc ]; then
 			install'
 fi
 
+# making release should always start from clean state
+${CHROOT_CMD} ${SETENV} ${CROSSENV} ${WMAKE} clean
 ${CHROOT_CMD} ${SETENV} ${CROSSENV} ${WMAKE} buildworld
 ${CHROOT_CMD} ${SETENV} ${CROSSENV} ${KMAKE} buildkernel
 ${CHROOT_CMD} ${SETENV} ${CROSSENV} ${RMAKE} clean release
 ${CHROOT_CMD} ${SETENV} ${CROSSENV} ${RMAKE} install DESTDIR=/R
+# do "make clean" here to save disk space
+# as distfiles are installed, no need to keep any files created during the build process
+${CHROOT_CMD} ${SETENV} ${CROSSENV} ${WMAKE} clean
