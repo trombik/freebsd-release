@@ -80,6 +80,8 @@ if [ ! -d ${CHROOTDIR}/usr/ports ]; then
 fi
 (cd ${CHROOTDIR}/usr/ports && ${GIT_CMD} pull)
 
+# making release should always start from clean state
+${SETENV} MAKEOBJDIRPREFIX=${MAKEOBJDIRPREFIX} ${NWMAKE} -C ${CHROOTDIR}/usr/src clean
 ${SETENV} MAKEOBJDIRPREFIX=${MAKEOBJDIRPREFIX} ${NWMAKE} -C ${CHROOTDIR}/usr/src ${WORLD_FLAGS} buildworld
 ${SETENV} MAKEOBJDIRPREFIX=${MAKEOBJDIRPREFIX} ${NWMAKE} -C ${CHROOTDIR}/usr/src installworld distribution DESTDIR=${CHROOTDIR}
 mount -t devfs devfs ${CHROOTDIR}/dev
@@ -99,8 +101,6 @@ if [ -d ${CHROOTDIR}/usr/doc ]; then
 			install'
 fi
 
-# making release should always start from clean state
-${CHROOT_CMD} ${SETENV} ${CROSSENV} ${WMAKE} clean
 ${CHROOT_CMD} ${SETENV} ${CROSSENV} ${WMAKE} buildworld
 ${CHROOT_CMD} ${SETENV} ${CROSSENV} ${KMAKE} buildkernel
 ${CHROOT_CMD} ${SETENV} ${CROSSENV} ${RMAKE} clean release
