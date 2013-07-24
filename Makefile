@@ -43,11 +43,11 @@
 # TODO
 # - test "upload" target
 # - KERNCONF="GENERIC XENHVM"
-# - LOCAL_PATCHES support
 
 RELEASE_DIR?=		release
 RELEASE_MAJOR?=		9
 RELEASE_MINOR?=	1
+PATCH_DIR?=	patches
 SYSCTL=			/sbin/sysctl
 .if !defined(TARGET)
 TARGET!=		uname -m
@@ -62,7 +62,7 @@ PXE_HOST?=		pxe.dcjp02.reallyenglish.com
 OBJDIR?=	obj
 PUBLIC_WWWDIR?=	www
 
-all:	generate_release ${PUBLIC_WWWDIR}
+all:	patch generate_release ${PUBLIC_WWWDIR}
 
 init:
 
@@ -92,6 +92,21 @@ publish:	makepatch
 .for F in bootonly.iso memstick release.iso
 	(cd ${.CURDIR} && cp -a ${RELEASE_DIR}/${RELEASE_MAJOR}.${RELEASE_MINOR}/${TARGET}/R/${F} ${PUBLIC_WWWDIR}/pub/FreeBSD/releases/${TARGET}/${TARGET_ARCH}/ISO-IMAGES/FreeBSD-${RELEASE_MAJOR}.${RELEASE_MINOR}-RELEASE-${TARGET_ARCH}-${F})
 .endfor
+
+patch:	revert do-patch
+
+do-patch:
+	( \
+		cd ${.CURDIR} && \
+		for F in ${PATCH_DIR}/patch-*; do \
+			patch -t -d ${RELEASE_DIR}/${RELEASE_MAJOR}.${RELEASE_MINOR}/${TARGET}/usr/src < $${F}; \
+		done; \
+	)
+revert:
+	( \
+		cd ${.CURDIR} && cd ${RELEASE_DIR}/${RELEASE_MAJOR}.${RELEASE_MINOR}/${TARGET}/usr/src && \
+		svn revert --depth=infinity . \
+	)
 
 makepatch:
 	(cd ${.CURDIR} && cd ${RELEASE_DIR}/${RELEASE_MAJOR}.${RELEASE_MINOR}/${TARGET}/usr/src && svn diff) | (cd ${.CURDIR} && cat - > ${PUBLIC_WWWDIR}/pub/FreeBSD/releases/${TARGET}/${TARGET_ARCH}/${RELEASE_MAJOR}.${RELEASE_MINOR}-RELEASE/patch-src.txt)
