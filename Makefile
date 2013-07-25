@@ -27,6 +27,9 @@
 # "make all" creates release ISO and FTP directories for all
 # FreeBSD $RELEASE_MAJOR.$RELEASE_MINOR_VERSIONS
 #
+# "make patch" *reverts* local changes and apply patches under PATCH_DIR. this
+# target must be executed *after* successfull "make all".
+#
 # SEE ALSO
 #   http://www.freebsd.org/doc/en/articles/releng/index.html (outdated but still useful)
 #   release(7)
@@ -55,7 +58,7 @@ PXE_HOST?=		pxe.dcjp02.reallyenglish.com
 OBJDIR?=	obj
 PUBLIC_WWWDIR?=	www
 
-all:	patch generate_release ${PUBLIC_WWWDIR}
+all:	generate_release ${PUBLIC_WWWDIR}
 
 init:
 
