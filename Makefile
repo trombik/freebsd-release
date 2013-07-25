@@ -122,3 +122,6 @@ upload:
 	scp ${RELEASE_DIR}/conf/boot/* \
 		${PXE_HOST}:/tftproot/pub/FreeBSD/${ARCH}/${RELEASE_MAJOR}.${V}-RELEASE/boot/
 .endfor
+
+help:
+	@cat ${.CURDIR}/README.md
