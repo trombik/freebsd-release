@@ -24,15 +24,8 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-# to initilize, "make init".
-#
-# * create all directories
-# * checkout all sources
-#
 # "make all" creates release ISO and FTP directories for all
 # FreeBSD $RELEASE_MAJOR.$RELEASE_MINOR_VERSIONS
-#
-# "make update-stable release-stable" creates one for -STABLE
 #
 # SEE ALSO
 #   http://www.freebsd.org/doc/en/articles/releng/index.html (outdated but still useful)
