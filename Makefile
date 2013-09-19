@@ -98,6 +98,8 @@ do-patch:
 			patch -t -d ${RELEASE_DIR}/${RELEASE_MAJOR}.${RELEASE_MINOR}/${TARGET}/usr/src < $${F}; \
 		done; \
 	)
+# remove *.orig
+	( cd ${.CURDIR} && cd ${RELEASE_DIR}/${RELEASE_MAJOR}.${RELEASE_MINOR}/${TARGET}/usr/src && rm `svn st | grep '^\?'|cut -f8 -d" " | grep 'orig$$'` )
 revert:
 	( \
 		cd ${.CURDIR} && cd ${RELEASE_DIR}/${RELEASE_MAJOR}.${RELEASE_MINOR}/${TARGET}/usr/src && \
