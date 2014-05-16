@@ -3,11 +3,6 @@ freebsd-release
 
 release(7) the latest FreeBSD release. supports 10.x and newer.
 
-REQUIREMENT
-===========
-
-- subversion
-
 USAGE
 =====
 

@@ -65,6 +65,7 @@ MTREE_FILE?=	${.CURDIR}/www.mtree
 PATCH?=	/usr/bin/patch
 # use -p1 for git style patches
 PATCH_FLAGS?=	-p1
+SVN?=	/usr/bin/svnlite
 
 all:	init mkdir checkout-src patch release publish
 
@@ -73,8 +74,8 @@ init:
 		echo "cannot open ${RELEASE_CONF}"; \
 		exit 1; \
 	fi
-	@if ! svn help >/dev/null 2>&1; then \
-		echo 1>&2 "cannot find svn"; \
+	@if ! ${SVN} help >/dev/null 2>&1; then \
+		echo 1>&2 "cannot find ${SVN}"; \
 		exit 1; \
 	fi
 
@@ -94,7 +95,7 @@ checkout-src:
 		export MY_TARGET_ARCH=${TARGET_ARCH}; \
 		export MY_SRCBRANCH=base/${SRC_BRANCH}; \
 		. ${RELEASE_CONF}; \
-		svn co --force $${SVNROOT}/$${SRCBRANCH} ${SRC_DIR}; \
+		${SVN} co --force $${SVNROOT}/$${SRCBRANCH} ${SRC_DIR}; \
 	)
 
 patch:	revert do-patch
@@ -102,7 +103,7 @@ revert:
 	# revert everything before patching
 	( \
 		cd ${SRC_DIR} && \
-		svn revert --depth=infinity . \
+		${SVN} revert --depth=infinity . \
 	)
 
 do-patch:
@@ -115,10 +116,10 @@ do-patch:
 	# clean up leftovers
 	( \
 		cd ${SRC_DIR}; \
-		for F in `svn st | grep '^\?'|cut -f8 -d" " | grep 'orig$$'`; do \
+		for F in `${SVN} st | grep '^\?'|cut -f8 -d" " | grep 'orig$$'`; do \
 			rm $${F}; \
 		done; \
-		for F in `svn st | grep '^\?'|cut -f8 -d" " | grep 'rej$$'`; do \
+		for F in `${SVN} st | grep '^\?'|cut -f8 -d" " | grep 'rej$$'`; do \
 			rm $${F}; \
 		done; \
 	)
@@ -141,7 +142,7 @@ publish: publish-patch
 	cp -a ${CHROOT_DIR}/R/ftp/* ${WWW_DIR}/
 
 publish-patch:
-	(cd ${SRC_DIR} && svn diff > ${WWW_DIR}/patch.txt)
+	(cd ${SRC_DIR} && ${SVN} diff > ${WWW_DIR}/patch.txt)
 
 makemtree:
 	@(cd ${.CURDIR} && mtree -cdjn -k uname,gname,mode,nochange,link -p ${WWW_ROOT} > ${MTREE_FILE})
