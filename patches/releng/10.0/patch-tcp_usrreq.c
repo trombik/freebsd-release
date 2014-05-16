@@ -2,8 +2,8 @@ http://marc.info/?l=freebsd-stable&m=138389655720158&w=1
 
 Index: sys/netinet/tcp_usrreq.c
 ===================================================================
---- sys/netinet/tcp_usrreq.c	(revision 255696)
-+++ sys/netinet/tcp_usrreq.c	(working copy)
+--- a/sys/netinet/tcp_usrreq.c	(revision 255696)
++++ b/sys/netinet/tcp_usrreq.c	(working copy)
 @@ -1550,6 +1550,27 @@
  			INP_WUNLOCK(inp);
  			error = sooptcopyout(sopt, buf, TCP_CA_NAME_MAX);
