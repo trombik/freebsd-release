@@ -1,0 +1,27 @@
+commit 33dce93124a0e70e57403fcbe3ee5591e17eef46
+Author: emaste <emaste@FreeBSD.org>
+Date:   Tue Mar 4 21:51:09 2014 +0000
+
+    Disable amd64 TLB Context ID (pcid) by default for now
+    
+    There are a number of reports of userspace application crashes that
+    are "solved" by setting vm.pmap.pcid_enabled=0, including Java and the
+    x11/mate-terminal port (PR ports/184362).
+    
+    For now apply a band-aid of disabling pcid by default in stable/10.
+    
+    Sponsored by:	The FreeBSD Foundation
+
+diff --git a/sys/amd64/amd64/pmap.c b/sys/amd64/amd64/pmap.c
+index 54b985d..93e32ee 100644
+--- a/sys/amd64/amd64/pmap.c
++++ b/sys/amd64/amd64/pmap.c
+@@ -367,7 +367,7 @@ static int pmap_flags = PMAP_PDE_SUPERPAGE;	/* flags for x86 pmaps */
+ 
+ static struct unrhdr pcid_unr;
+ static struct mtx pcid_mtx;
+-int pmap_pcid_enabled = 1;
++int pmap_pcid_enabled = 0;
+ SYSCTL_INT(_vm_pmap, OID_AUTO, pcid_enabled, CTLFLAG_RDTUN, &pmap_pcid_enabled,
+     0, "Is TLB Context ID enabled ?");
+ int invpcid_works = 0;

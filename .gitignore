@@ -1,5 +1,4 @@
-/release/
-/obj/
-/*.log
+/chroot/
 /www/
+/*.log
 *.swp
