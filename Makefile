@@ -140,14 +140,14 @@ release:
 
 clean:
 	make -C ${SRC_DIR} clean
-	rm -f ${WWW_DIR}/ports.tgz
+	rm -f ${WWW_DIR}/ports.txz
 
-ports:	${WWW_DIR}/ports.tgz
+ports:	${WWW_DIR}/ports.txz
 
-${WWW_DIR}/ports.tgz:
-	fetch -o ${WWW_DIR}/ports.tgz ${PORTS_URL}
+${WWW_DIR}/ports.txz:
+	fetch -o - ${PORTS_URL} | gunzip | xz - > ${WWW_DIR}/ports.txz
 
-publish: publish-patch
+publish: publish-patch ports
 	# .iso images are not copied mostly due to disk space
 	cp -a ${CHROOT_DIR}/R/ftp/* ${WWW_DIR}/
 
