@@ -66,6 +66,7 @@ PATCH?=	/usr/bin/patch
 # use -p1 for git style patches
 PATCH_FLAGS?=	-p1
 SVN?=	/usr/bin/svnlite
+PORTS_URL?=	https://github.com/reallyenglish/freebsd-ports/archive/10.0@re.tar.gz
 
 all:	init mkdir checkout-src patch release publish
 
@@ -136,6 +137,15 @@ release:
 		export MY_SRCBRANCH=base/${SRC_BRANCH}; \
 		sh ${SRC_DIR}/release/release.sh -c ${RELEASE_CONF}; \
 	)
+
+clean:
+	make -C ${SRC_DIR} clean
+	rm -f ${WWW_DIR}/ports.tgz
+
+ports:	${WWW_DIR}/ports.tgz
+
+${WWW_DIR}/ports.tgz:
+	fetch -o ${WWW_DIR}/ports.tgz ${PORTS_URL}
 
 publish: publish-patch
 	# .iso images are not copied mostly due to disk space
