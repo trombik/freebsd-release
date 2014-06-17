@@ -1,0 +1,26 @@
+commit db6e97e28efb01c634cde294414c0d121a016168
+Author: demon <demon@FreeBSD.org>
+Date:   Sat Jan 25 10:43:47 2014 +0000
+
+    Merge r260987:
+    
+     Do not exit with non-zero return code if sysctl.conf or sysctl.conf.local files
+     are absent.
+    
+     Approved by:	delphij
+
+diff --git a/etc/rc.d/sysctl b/etc/rc.d/sysctl
+index 2420414..6e968f7 100755
+--- a/etc/rc.d/sysctl
++++ b/etc/rc.d/sysctl
+@@ -27,7 +27,9 @@ sysctl_start()
+ 	esac
+ 
+ 	for _f in /etc/sysctl.conf /etc/sysctl.conf.local; do
+-		[ -r ${_f} ] && ${command} ${command_args} ${_f} > /dev/null
++		if [ -r ${_f} ]; then
++			${command} ${command_args} ${_f} > /dev/null
++		fi
+ 	done
+ }
+ 
