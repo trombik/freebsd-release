@@ -104,7 +104,10 @@ revert:
 	# revert everything before patching
 	( \
 		cd ${SRC_DIR} && \
-		${SVN} revert --depth=infinity . \
+		${SVN} revert --depth=infinity . && \
+		for F in `${SVN} st | grep '^\?'|cut -f8 -d" "`; do \
+			rm -rf $${F}; \
+		done; \
 	)
 
 do-patch:
